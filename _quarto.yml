@@ -18,8 +18,12 @@ website:
             text: "Exercise 7"
           - href: exercises/exercise_8.qmd
             text: "Exercise 8"
-          - href: exercises/exercise_9.qmd
-            text: "Exercise 9"
+          - href: exercises/exercise_9_10.qmd
+            text: "Exercise 9 & 10"
+          - href: exercises/exercise_11_12.qmd
+            text: "Exercise 11 & 12"
+          - href: exercises/exercise_13.qmd
+            text: "Exercise 13"
 
 format:
   html:
