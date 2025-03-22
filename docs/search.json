@@ -1,5 +1,12 @@
 [
   {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Daily Exercise",
+    "section": "",
+    "text": "In the drop down menu above you will find links to all of my daily exercises."
+  },
+  {
     "objectID": "exercises/exercise_8.html",
     "href": "exercises/exercise_8.html",
     "title": "Daily Exercise 8",
@@ -63,6 +70,48 @@
     "text": "We are going to practice some data wrangling skills using a real-world dataset about COVID cases curated and maintained by the New York Times. The data has been used to create reports and data visualizations like this, and are archived on a GitHub repo here. Looking at the README in this repository we read:\n\n“We are providing two sets of data with cumulative counts of coronavirus cases and deaths: one with our most current numbers for each geography and another with historical data showing the tally for each day for each geography … the historical files are the final counts at the end of each day … The historical and live data are released in three files, one for each of these geographic levels: U.S., states and counties. A smaller file with only the most recent 30 days of data is also available”\n\nFor this lab we will use the historic, recent, country level data which is stored as an updating CSV at this URL:\n\nhttps://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties-recent.csv\n\nI will get you started this week, in the following code chunk, I am attaching the tidyverse package; saving the NY-Times URL as a value called “url”; and I am reading that URL into an object called covid\n\nlibrary(tidyverse)\nurl = 'https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties-recent.csv'\ncovid = read_csv(url)\nhead(covid, 5)\n\n# A tibble: 5 × 6\n  date       county  state   fips  cases deaths\n  &lt;date&gt;     &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt; &lt;dbl&gt;  &lt;dbl&gt;\n1 2023-02-22 Autauga Alabama 01001 19732    230\n2 2023-02-22 Baldwin Alabama 01003 69641    724\n3 2023-02-22 Barbour Alabama 01005  7451    112\n4 2023-02-22 Bibb    Alabama 01007  8067    109\n5 2023-02-22 Blount  Alabama 01009 18616    261\n\n\nHint: You can print the top X rows of a data.frame with slice.\n\nslice(covid, 1:5)\n\nto print the top 5 columns of the raw covid object\n\n\nUse dplyr verbs to create a data.frame of the 5 counties with the most current cases. Remember, the cases and deaths are cumulative, so you only need to deal with the data for the most current (max) date.\n(Hint: filter, arrange, slice)\n\nlibrary(tidyverse)\n\n\n\n\n\nUse dplyr verbs to create a data.frame of the 5 states with the most cases current cases.\n(Hint: filter, group_by, summarize, arrange, slice)\n\ntop_states &lt;- covid %&gt;%\n  filter(date == max(date)) %&gt;%\n  group_by(state) %&gt;%\n  summarize(total_cases = sum(cases, na.rm = TRUE)) %&gt;%\n  arrange(desc(total_cases)) %&gt;%\n  slice(1:5)\n\nprint(top_states)\n\n# A tibble: 5 × 2\n  state      total_cases\n  &lt;chr&gt;            &lt;dbl&gt;\n1 California    12169158\n2 Texas          8447233\n3 Florida        7542869\n4 New York       6805271\n5 Illinois       4107931\n\n\n\n\n\nUse the dplyr verbs to report the 5 counties with the worst current death/cases ratio: (e.g.\\(100* (deaths/cases)\\))\n(Hint: You will need to remove those where cases == 0 and county == Unknown) (Hint: filter, mutate, arrange, slice)\n\nworst_ratios &lt;- covid %&gt;%\n  filter(date == max(date), cases &gt; 0, county != \"Unknown\") %&gt;%\n  mutate(death_ratio = 100 * (deaths / cases)) %&gt;%\n  arrange(desc(death_ratio)) %&gt;%\n  slice(1:5)\n\nprint(worst_ratios)\n\n# A tibble: 5 × 7\n  date       county   state    fips  cases deaths death_ratio\n  &lt;date&gt;     &lt;chr&gt;    &lt;chr&gt;    &lt;chr&gt; &lt;dbl&gt;  &lt;dbl&gt;       &lt;dbl&gt;\n1 2023-03-23 Storey   Nevada   32029   197     14        7.11\n2 2023-03-23 Sabine   Texas    48403  1672     94        5.62\n3 2023-03-23 McMullen Texas    48311   196     11        5.61\n4 2023-03-23 Blaine   Nebraska 31009    76      4        5.26\n5 2023-03-23 Grant    Nebraska 31075   114      6        5.26\n\n\n\n\n\nUse the dplyr verbs to report the 5 states with the worst current death/case ratio.\n(Hint: filter, group_by, summarize, mutate, arrange, slice)\n\nworst_state_ratios &lt;- covid %&gt;%\n  filter(date == max(date), cases &gt; 0) %&gt;%\n  group_by(state) %&gt;%\n  summarize(total_cases = sum(cases, na.rm = TRUE),\n            total_deaths = sum(deaths, na.rm = TRUE)) %&gt;%\n  mutate(death_case_ratio = 100 * (total_deaths / total_cases)) %&gt;%\n  arrange(desc(death_case_ratio)) %&gt;%\n  slice(1:5)\n\nprint(worst_state_ratios)\n\n# A tibble: 5 × 4\n  state        total_cases total_deaths death_case_ratio\n  &lt;chr&gt;              &lt;dbl&gt;        &lt;dbl&gt;            &lt;dbl&gt;\n1 Pennsylvania     3539135        50701             1.43\n2 Michigan         3068195        42311             1.38\n3 Georgia          2984923        41056             1.38\n4 Nevada            892814        12093             1.35\n5 Arizona          2451062        33190             1.35"
   },
   {
+    "objectID": "exercises/exercise_13.html",
+    "href": "exercises/exercise_13.html",
+    "title": "Daily Exercise 13",
+    "section": "",
+    "text": "I have taken a basic programming class in Java and have worked on computers my whole life. From the beginning of this class I felt very comfortable managing different computational environments and organizing data. I was completely lost at the beginning of this course trying to set up and navigate the GitHub environment. There was information overload and I had no clue how to fix errors or where to begin. I have since figured it out and feel comfortable doing the basics of pushing and pulling. I think these skills are transferable to my career. It is a wonderful tool to have in my belt and being able to easily share code with others on future projects will be a huge help."
+  },
+  {
+    "objectID": "exercises/exercise_13.html#unit-1-think-back-to-the-beginninghow-comfortable-were-you-with-setting-up-and-using-r-rstudio-git-and-github-do-you-now-feel-more-confident-in-managing-your-computational-environment-and-organizing-your-data-what-aspects-still-feel-challenging-or-unclear-do-you-feel-that-the-skills-learned-are-transitioning-into-other-areas-of-your-computational-life",
+    "href": "exercises/exercise_13.html#unit-1-think-back-to-the-beginninghow-comfortable-were-you-with-setting-up-and-using-r-rstudio-git-and-github-do-you-now-feel-more-confident-in-managing-your-computational-environment-and-organizing-your-data-what-aspects-still-feel-challenging-or-unclear-do-you-feel-that-the-skills-learned-are-transitioning-into-other-areas-of-your-computational-life",
+    "title": "Daily Exercise 13",
+    "section": "",
+    "text": "I have taken a basic programming class in Java and have worked on computers my whole life. From the beginning of this class I felt very comfortable managing different computational environments and organizing data. I was completely lost at the beginning of this course trying to set up and navigate the GitHub environment. There was information overload and I had no clue how to fix errors or where to begin. I have since figured it out and feel comfortable doing the basics of pushing and pulling. I think these skills are transferable to my career. It is a wonderful tool to have in my belt and being able to easily share code with others on future projects will be a huge help."
+  },
+  {
+    "objectID": "exercises/exercise_13.html#unit-2-as-we-wrap-up-our-primary-unit-on-data-wrangling-visualization-and-analysis-how-do-you-feel-about-your-ability-to-import-clean-and-work-with-data-are-there-specific-techniques-joins-visualizations-statistical-methods-nestsgroups-that-you-feel-youve-improved-on-thinking-back-8-weeks-are-you-proud-of-the-progress-youve-made-or-feeling-lost-what-areas-do-you-want-to-focus-on-strengthening-as-we-continue",
+    "href": "exercises/exercise_13.html#unit-2-as-we-wrap-up-our-primary-unit-on-data-wrangling-visualization-and-analysis-how-do-you-feel-about-your-ability-to-import-clean-and-work-with-data-are-there-specific-techniques-joins-visualizations-statistical-methods-nestsgroups-that-you-feel-youve-improved-on-thinking-back-8-weeks-are-you-proud-of-the-progress-youve-made-or-feeling-lost-what-areas-do-you-want-to-focus-on-strengthening-as-we-continue",
+    "title": "Daily Exercise 13",
+    "section": "2. Unit 2 : As we wrap up our primary unit on data wrangling, visualization, and analysis, how do you feel about your ability to import, clean, and work with data? Are there specific techniques (joins, visualizations, statistical methods, nests/groups) that you feel you’ve improved on? Thinking back 8 weeks, are you proud of the progress you’ve made or feeling lost? What areas do you want to focus on strengthening as we continue?",
+    "text": "2. Unit 2 : As we wrap up our primary unit on data wrangling, visualization, and analysis, how do you feel about your ability to import, clean, and work with data? Are there specific techniques (joins, visualizations, statistical methods, nests/groups) that you feel you’ve improved on? Thinking back 8 weeks, are you proud of the progress you’ve made or feeling lost? What areas do you want to focus on strengthening as we continue?\nI am proud of the achievements I have had so far. I have taken stats previously and I knew going into this class what I am supposed to do to complete these statistical analyses. Know I know how to have a computer do them much quicker. There are times when I get caught up on something like a value being null due to me improperly cleaning the data but as of now it hasn’t been anything I cant figure out."
+  },
+  {
+    "objectID": "exercises/exercise_13.html#looking-ahead-are-you-making-the-progress-you-hoped-for-if-not-what-barriers-are-you-facing-and-what-steps-could-help-you-overcome-them-if-yes-what-strategies-have-been-working-for-you-what-are-your-goals-for-the-remainder-of-the-course-and-how-can-the-teaching-team-best-support-you-in-reaching-them",
+    "href": "exercises/exercise_13.html#looking-ahead-are-you-making-the-progress-you-hoped-for-if-not-what-barriers-are-you-facing-and-what-steps-could-help-you-overcome-them-if-yes-what-strategies-have-been-working-for-you-what-are-your-goals-for-the-remainder-of-the-course-and-how-can-the-teaching-team-best-support-you-in-reaching-them",
+    "title": "Daily Exercise 13",
+    "section": "3. Looking Ahead:: Are you making the progress you hoped for? If not, what barriers are you facing, and what steps could help you overcome them? If yes, what strategies have been working for you? What are your goals for the remainder of the course and how can the teaching team best support you in reaching them?",
+    "text": "3. Looking Ahead:: Are you making the progress you hoped for? If not, what barriers are you facing, and what steps could help you overcome them? If yes, what strategies have been working for you? What are your goals for the remainder of the course and how can the teaching team best support you in reaching them?\nI have found myself really struggling to create graphs. I often have to use the ? help feature or look it up on Google. I think its a handy tool to be able to visualize large sets of data using R but it doesn’t feel smooth or easy at the moment. I have been trying to figure it out as they have been assigned and have learned many tips throughout my own research and learning that have helped. My goals for this class is to get a foundation in R so I can use it to quickly do statistics and present different findings. I think it is a valuable tool and it makes it so I don’t have to do it by hand or by ‘plugging and chugging’."
+  },
+  {
+    "objectID": "exercises/exercise_13.html#modes-of-learning-how-do-you-feel-about-the-methods-in-which-content-is-shared-have-lectures-been-useful-labs-office-hours-daily-exercises-what-would-you-like-to-see-continue-and-what-would-you-like-us-to-consider-changing-to-help-your-growth",
+    "href": "exercises/exercise_13.html#modes-of-learning-how-do-you-feel-about-the-methods-in-which-content-is-shared-have-lectures-been-useful-labs-office-hours-daily-exercises-what-would-you-like-to-see-continue-and-what-would-you-like-us-to-consider-changing-to-help-your-growth",
+    "title": "Daily Exercise 13",
+    "section": "4. Modes of Learning: How do you feel about the methods in which content is shared? Have lectures been useful? Labs? Office hours? Daily Exercises? What would you like to see continue, and what would you like us to consider changing to help your growth?",
+    "text": "4. Modes of Learning: How do you feel about the methods in which content is shared? Have lectures been useful? Labs? Office hours? Daily Exercises? What would you like to see continue, and what would you like us to consider changing to help your growth?\nLectures have been helpful and especially the echo 360s videos too. Its nice to be able to go back and get a quick refresher. Labs have been useful especially for the setup of each lab when GitHub was a struggle. Alan has helped me with multiple issues which has been super nice. I wish office hours were less crowded. I feel as though every time I went there were many other students asking questions."
+  },
+  {
+    "objectID": "exercises/exercise_11_12.html",
+    "href": "exercises/exercise_11_12.html",
+    "title": "Daily Exercise 11 & 12",
+    "section": "",
+    "text": "library(tidyverse)\n\n── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──\n✔ dplyr     1.1.4     ✔ readr     2.1.5\n✔ forcats   1.0.0     ✔ stringr   1.5.1\n✔ ggplot2   3.4.4     ✔ tibble    3.2.1\n✔ lubridate 1.9.3     ✔ tidyr     1.3.1\n✔ purrr     1.0.2     \n── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──\n✖ dplyr::filter() masks stats::filter()\n✖ dplyr::lag()    masks stats::lag()\nℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors\n\nlibrary(broom)\nlibrary(ggpubr)\n\nWarning: package 'ggpubr' was built under R version 4.3.3\n\nlibrary(recipes)\n\nWarning: package 'recipes' was built under R version 4.3.3\n\n\n\nAttaching package: 'recipes'\n\nThe following object is masked from 'package:stringr':\n\n    fixed\n\nThe following object is masked from 'package:stats':\n\n    step\n\n\n\nPart 1: Normality Testing\n\ndata(\"airquality\")\nstr(airquality)\n\n'data.frame':   153 obs. of  6 variables:\n $ Ozone  : int  41 36 12 18 NA 28 23 19 8 NA ...\n $ Solar.R: int  190 118 149 313 NA NA 299 99 19 194 ...\n $ Wind   : num  7.4 8 12.6 11.5 14.3 14.9 8.6 13.8 20.1 8.6 ...\n $ Temp   : int  67 72 74 62 56 66 65 59 61 69 ...\n $ Month  : int  5 5 5 5 5 5 5 5 5 5 ...\n $ Day    : int  1 2 3 4 5 6 7 8 9 10 ...\n\nsummary(airquality)\n\n     Ozone           Solar.R           Wind             Temp      \n Min.   :  1.00   Min.   :  7.0   Min.   : 1.700   Min.   :56.00  \n 1st Qu.: 18.00   1st Qu.:115.8   1st Qu.: 7.400   1st Qu.:72.00  \n Median : 31.50   Median :205.0   Median : 9.700   Median :79.00  \n Mean   : 42.13   Mean   :185.9   Mean   : 9.958   Mean   :77.88  \n 3rd Qu.: 63.25   3rd Qu.:258.8   3rd Qu.:11.500   3rd Qu.:85.00  \n Max.   :168.00   Max.   :334.0   Max.   :20.700   Max.   :97.00  \n NA's   :37       NA's   :7                                       \n     Month            Day      \n Min.   :5.000   Min.   : 1.0  \n 1st Qu.:6.000   1st Qu.: 8.0  \n Median :7.000   Median :16.0  \n Mean   :6.993   Mean   :15.8  \n 3rd Qu.:8.000   3rd Qu.:23.0  \n Max.   :9.000   Max.   :31.0  \n                               \n\n\nThe dataset contains air quality measurements in New York. It has columns like Ozone, Temp, Solar.R, and Wind.\n\nshapiro.test(airquality$Ozone)\n\n\n    Shapiro-Wilk normality test\n\ndata:  airquality$Ozone\nW = 0.87867, p-value = 2.79e-08\n\nshapiro.test(airquality$Temp)\n\n\n    Shapiro-Wilk normality test\n\ndata:  airquality$Temp\nW = 0.97617, p-value = 0.009319\n\nshapiro.test(airquality$Solar.R)\n\n\n    Shapiro-Wilk normality test\n\ndata:  airquality$Solar.R\nW = 0.94183, p-value = 9.492e-06\n\nshapiro.test(airquality$Wind)\n\n\n    Shapiro-Wilk normality test\n\ndata:  airquality$Wind\nW = 0.98575, p-value = 0.1178\n\n\nThe Shapiro-Wilk test checks if data is normally distributed. The null hypothesis is that the data follows a normal distribution. The alternative hypothesis is that it does not. If the p-value is small (&lt;0.05), we reject the null hypothesis. Most of the variables have small p-values, meaning that wind with a p-value of 0.1178 is not normally distributed\n\n\nPart 2: Data Transformation and Feature Engineering\n\nairquality &lt;- airquality %&gt;%\n  mutate(Season = case_when(\n    Month %in% c(11, 12, 1) ~ \"Winter\",\n    Month %in% c(2, 3, 4) ~ \"Spring\",\n    Month %in% c(5, 6, 7) ~ \"Summer\",\n    Month %in% c(8, 9, 10) ~ \"Fall\"\n  ))\n\ntable(airquality$Season)\n\n\n  Fall Summer \n    61     92 \n\n\n\n\nPart 3: Data Preprocessing\n\nairquality_clean &lt;- airquality %&gt;% drop_na(Ozone) \n\nrec &lt;- recipe(Ozone ~ Temp + Solar.R + Wind + Season, data = airquality_clean) %&gt;%\n  step_impute_mean(all_numeric_predictors()) %&gt;%  \n  step_normalize(all_numeric_predictors())\n\ndat_prepped &lt;- prep(rec) %&gt;% bake(new_data = NULL)\n\nNormalizing makes sure variables are on the same scale. We use prep() to set up the transformations and bake() to apply them.\n\n\nPart 4: Building a Linear Regression Model\n\nmodel &lt;- lm(Ozone ~ ., data = dat_prepped)\nsummary(model)\n\n\nCall:\nlm(formula = Ozone ~ ., data = dat_prepped)\n\nResiduals:\n    Min      1Q  Median      3Q     Max \n-39.542 -14.805  -2.438  10.503  99.523 \n\nCoefficients:\n             Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept)    40.034      2.965  13.501  &lt; 2e-16 ***\nTemp           16.409      2.482   6.612 1.38e-09 ***\nSolar.R         4.927      2.136   2.306   0.0229 *  \nWind          -11.114      2.315  -4.801 4.97e-06 ***\nSeasonSummer    3.985      4.197   0.950   0.3444    \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 21.33 on 111 degrees of freedom\nMultiple R-squared:  0.5965,    Adjusted R-squared:  0.5819 \nF-statistic: 41.02 on 4 and 111 DF,  p-value: &lt; 2.2e-16\n\n\nThe R-squared value shows how well the model fits. The coefficients show how each variable affects Ozone. Some p-values are small, meaning those variables are significant.\n\n\nPart 5: Model Diagnostics\n\nresults &lt;- augment(model, dat_prepped)\n\nnrow(dat_prepped) \n\n[1] 116\n\nggarrange(\n  ggplot(results, aes(x = .resid)) + geom_histogram(),\n  ggqqplot(results$.resid),\n  ncol = 2\n)\n\n`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.\n\n\n\n\n\n\n\n\nggscatter(results, x = \"Ozone\", y = \".fitted\",\n          add = \"reg.line\", conf.int = TRUE,\n          cor.coef = TRUE, cor.method = \"spearman\",\n          ellipse = TRUE)"
+  },
+  {
     "objectID": "exercises/exercise_5.html",
     "href": "exercises/exercise_5.html",
     "title": "Daily Exercise 5",
@@ -77,58 +126,58 @@
     "text": "# Load the palmerspenguins package\nlibrary(palmerpenguins)\n\n\n# 1. Examine the dataset using the help page\n?penguins\n\nstarting httpd help server ... done\n\n\n\n# 2. Check the class of the penguins dataset\nclass(penguins)\n\n[1] \"tbl_df\"     \"tbl\"        \"data.frame\"\n\n\n\n# 3. Check the structure of the dataset\nstr(penguins)\n\ntibble [344 × 8] (S3: tbl_df/tbl/data.frame)\n $ species          : Factor w/ 3 levels \"Adelie\",\"Chinstrap\",..: 1 1 1 1 1 1 1 1 1 1 ...\n $ island           : Factor w/ 3 levels \"Biscoe\",\"Dream\",..: 3 3 3 3 3 3 3 3 3 3 ...\n $ bill_length_mm   : num [1:344] 39.1 39.5 40.3 NA 36.7 39.3 38.9 39.2 34.1 42 ...\n $ bill_depth_mm    : num [1:344] 18.7 17.4 18 NA 19.3 20.6 17.8 19.6 18.1 20.2 ...\n $ flipper_length_mm: int [1:344] 181 186 195 NA 193 190 181 195 193 190 ...\n $ body_mass_g      : int [1:344] 3750 3800 3250 NA 3450 3650 3625 4675 3475 4250 ...\n $ sex              : Factor w/ 2 levels \"female\",\"male\": 2 1 1 NA 1 2 1 2 NA NA ...\n $ year             : int [1:344] 2007 2007 2007 2007 2007 2007 2007 2007 2007 2007 ...\n\n\n\n# 4. Check the dimensions of the dataset\ndim(penguins)\n\n[1] 344   8\n\n\n\n# 5. Get the column names of the dataset\ncolnames(penguins)\n\n[1] \"species\"           \"island\"            \"bill_length_mm\"   \n[4] \"bill_depth_mm\"     \"flipper_length_mm\" \"body_mass_g\"      \n[7] \"sex\"               \"year\"             \n\n\n\n# 6. Check the data type of `flipper_length_mm` and `island`\nclass(penguins$flipper_length_mm)\n\n[1] \"integer\"\n\nclass(penguins$island)\n\n[1] \"factor\"\n\n\n\n# 7. Calculate the mean flipper length (excluding NAs)\nmean(penguins$flipper_length_mm, na.rm = TRUE)\n\n[1] 200.9152\n\n\n\n# 8. Calculate the standard deviation of flipper length (excluding NAs)\nsd(penguins$flipper_length_mm, na.rm = TRUE)\n\n[1] 14.06171\n\n\n\n# 9. Calculate the median body mass (excluding NAs)\nmedian(penguins$body_mass_g, na.rm = TRUE)\n\n[1] 4050\n\n\n\n# 10. Find the island of the 100th penguin\npenguins$island[100]\n\n[1] Dream\nLevels: Biscoe Dream Torgersen"
   },
   {
-    "objectID": "exercises/exercise_9.html",
-    "href": "exercises/exercise_9.html",
-    "title": "Daily Exercise 9",
+    "objectID": "exercises/exercise_9_10.html",
+    "href": "exercises/exercise_9_10.html",
+    "title": "Daily Exercise 9 & 10",
     "section": "",
     "text": "?airquality\n\nstarting httpd help server ... done"
   },
   {
-    "objectID": "exercises/exercise_9.html#step-1",
-    "href": "exercises/exercise_9.html#step-1",
-    "title": "Daily Exercise 9",
+    "objectID": "exercises/exercise_9_10.html#step-1",
+    "href": "exercises/exercise_9_10.html#step-1",
+    "title": "Daily Exercise 9 & 10",
     "section": "",
     "text": "?airquality\n\nstarting httpd help server ... done"
   },
   {
-    "objectID": "exercises/exercise_9.html#step-2",
-    "href": "exercises/exercise_9.html#step-2",
-    "title": "Daily Exercise 9",
+    "objectID": "exercises/exercise_9_10.html#step-2",
+    "href": "exercises/exercise_9_10.html#step-2",
+    "title": "Daily Exercise 9 & 10",
     "section": "Step 2",
     "text": "Step 2\n\nlibrary(visdat)\n\nWarning: package 'visdat' was built under R version 4.3.3\n\nvis_dat(airquality)\n\n\n\n\n\n\n\n\nThe data will need some cleaning because there are missing values for both Ozone and Solar Radiation."
   },
   {
-    "objectID": "exercises/exercise_9.html#step-3",
-    "href": "exercises/exercise_9.html#step-3",
-    "title": "Daily Exercise 9",
+    "objectID": "exercises/exercise_9_10.html#step-3",
+    "href": "exercises/exercise_9_10.html#step-3",
+    "title": "Daily Exercise 9 & 10",
     "section": "Step 3",
     "text": "Step 3\n\ncleaned_data &lt;- na.omit(airquality[, c(\"Ozone\", \"Wind\")])\n\nmodel &lt;- lm(Ozone ~ Wind, data = cleaned_data)\n\nsummary(model)\n\n\nCall:\nlm(formula = Ozone ~ Wind, data = cleaned_data)\n\nResiduals:\n    Min      1Q  Median      3Q     Max \n-51.572 -18.854  -4.868  15.234  90.000 \n\nCoefficients:\n            Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept)  96.8729     7.2387   13.38  &lt; 2e-16 ***\nWind         -5.5509     0.6904   -8.04 9.27e-13 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 26.47 on 114 degrees of freedom\nMultiple R-squared:  0.3619,    Adjusted R-squared:  0.3563 \nF-statistic: 64.64 on 1 and 114 DF,  p-value: 9.272e-13\n\n\nI choose wind because there is no data missing according to the vis_dat graph and wind speed might be associated with the concentration of ozone in the atmosphere."
   },
   {
-    "objectID": "exercises/exercise_9.html#step-4",
-    "href": "exercises/exercise_9.html#step-4",
-    "title": "Daily Exercise 9",
+    "objectID": "exercises/exercise_9_10.html#step-4",
+    "href": "exercises/exercise_9_10.html#step-4",
+    "title": "Daily Exercise 9 & 10",
     "section": "Step 4",
     "text": "Step 4\n\nsummary(model)\n\n\nCall:\nlm(formula = Ozone ~ Wind, data = cleaned_data)\n\nResiduals:\n    Min      1Q  Median      3Q     Max \n-51.572 -18.854  -4.868  15.234  90.000 \n\nCoefficients:\n            Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept)  96.8729     7.2387   13.38  &lt; 2e-16 ***\nWind         -5.5509     0.6904   -8.04 9.27e-13 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 26.47 on 114 degrees of freedom\nMultiple R-squared:  0.3619,    Adjusted R-squared:  0.3563 \nF-statistic: 64.64 on 1 and 114 DF,  p-value: 9.272e-13\n\n\nI would consider this a valid model because the p-value is less than 0.05 and the R-squared value seems good."
   },
   {
-    "objectID": "exercises/exercise_9.html#step-5",
-    "href": "exercises/exercise_9.html#step-5",
-    "title": "Daily Exercise 9",
+    "objectID": "exercises/exercise_9_10.html#step-5",
+    "href": "exercises/exercise_9_10.html#step-5",
+    "title": "Daily Exercise 9 & 10",
     "section": "Step 5",
     "text": "Step 5\nR-squared number represents how well wind explains changes in ozone levels. Say the R-squared value is .6 that means that 60 percent of the variability in ozone can be explained by the variability in wind."
   },
   {
-    "objectID": "exercises/exercise_9.html#step-6",
-    "href": "exercises/exercise_9.html#step-6",
-    "title": "Daily Exercise 9",
+    "objectID": "exercises/exercise_9_10.html#step-6",
+    "href": "exercises/exercise_9_10.html#step-6",
+    "title": "Daily Exercise 9 & 10",
     "section": "Step 6",
     "text": "Step 6\n\nlibrary(broom)\n\naugmented_data &lt;- augment(model, cleaned_data)\n\nhead(augmented_data)\n\n# A tibble: 6 × 9\n  .rownames Ozone  Wind .fitted .resid    .hat .sigma .cooksd .std.resid\n  &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;      &lt;dbl&gt;\n1 1            41   7.4    55.8  -14.8 0.0127    26.5 0.00204     -0.563\n2 2            36   8      52.5  -16.5 0.0110    26.5 0.00217     -0.626\n3 3            12  12.6    26.9  -14.9 0.0137    26.5 0.00224     -0.568\n4 4            18  11.5    33.0  -15.0 0.0104    26.5 0.00172     -0.571\n5 6            28  14.9    14.2   13.8 0.0259    26.6 0.00373      0.530\n6 7            23   8.6    49.1  -26.1 0.00970   26.5 0.00482     -0.992"
   },
   {
-    "objectID": "exercises/exercise_9.html#step-7",
-    "href": "exercises/exercise_9.html#step-7",
-    "title": "Daily Exercise 9",
+    "objectID": "exercises/exercise_9_10.html#step-7",
+    "href": "exercises/exercise_9_10.html#step-7",
+    "title": "Daily Exercise 9 & 10",
     "section": "Step 7",
     "text": "Step 7\n\nlibrary(ggplot2)\n\n\nggplot(augmented_data, aes(x = Ozone, y = .fitted)) +\n  geom_point() + \n  geom_abline(intercept = 0, slope = 1, color = \"red\") +  \n  labs(\n    title = \"Actual vs Predicted Ozone\",\n    subtitle = paste(\"Correlation:\", round(cor(augmented_data$Ozone, augmented_data$.fitted), 2)),\n    x = \"Actual Ozone\",\n    y = \"Predicted Ozone\"\n  ) +\n  theme_minimal()"
   }
