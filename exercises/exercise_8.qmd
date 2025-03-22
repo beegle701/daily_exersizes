@@ -1,0 +1,72 @@
+---
+title: "Daily Exercise 8"
+author: Nick Beegle
+format: html
+self-contained: TRUE
+editor: visual
+---
+
+## Step 1: Read in Covid Data
+
+```{r}
+library(readr)
+covid_data <- read.csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties-recent.csv")
+head(covid_data)
+```
+
+## Step 2: Create a New Data Frame with State Info
+
+```{r}
+state_data <- data.frame(
+  state = state.name,
+  state_abb = state.abb,
+  region = state.region,
+  stringsAsFactors = FALSE
+)
+head(state_data)
+```
+
+## Step 3: Join Data Frames
+
+```{r}
+library(dplyr)
+
+covid_data <- covid_data %>%
+  left_join(state_data, by = c("state" = "state"))
+head(covid_data)
+```
+
+## Step 4: Daily Cumulative Cases and Deaths for Each Region
+
+```{r}
+covid_data <- covid_data %>%
+  group_by(region, state, date) %>%
+  arrange(date) %>%
+  mutate(
+    daily_cases = cases - lag(cases, default = 0),
+    daily_deaths = deaths - lag(deaths, default = 0),
+    cumulative_cases = cumsum(daily_cases),
+    cumulative_deaths = cumsum(daily_deaths)
+  ) %>%
+  ungroup()
+head(covid_data)
+```
+
+## Step 5: Pivot Data
+
+```{r}
+
+#covid_data_long <- covid_data %>%
+#  pivot_longer(
+#    cols = c("cumulative_cases", "cumulative_deaths"),
+#    names_to = "metric",
+#    values_to = "value"
+#  )
+#head(covid_data_long)
+```
+
+## Step 6: Plot Data
+
+```{r}
+
+```

@@ -1,0 +1,23 @@
+---
+title: "Daily Exercise 13"
+author: Nick Beegle
+format: html
+self-contained: TRUE
+editor: visual
+---
+
+## **1. Unit 1**: Think back to the beginning—how comfortable were you with setting up and using R, RStudio, Git, and GitHub? Do you now feel more confident in managing your computational environment and organizing your data? What aspects still feel challenging or unclear? Do you feel that the skills learned are transitioning into other areas of your “computational life”?
+
+I have taken a basic programming class in Java and have worked on computers my whole life. From the beginning of this class I felt very comfortable managing different computational environments and organizing data. I was completely lost at the beginning of this course trying to set up and navigate the GitHub environment. There was information overload and I had no clue how to fix errors or where to begin. I have since figured it out and feel comfortable doing the basics of pushing and pulling. I think these skills are transferable to my career. It is a wonderful tool to have in my belt and being able to easily share code with others on future projects will be a huge help.
+
+## **2. Unit 2** : As we wrap up our primary unit on data wrangling, visualization, and analysis, how do you feel about your ability to import, clean, and work with data? Are there specific techniques (joins, visualizations, statistical methods, nests/groups) that you feel you’ve improved on? Thinking back 8 weeks, are you proud of the progress you’ve made or feeling lost? What areas do you want to focus on strengthening as we continue?
+
+I am proud of the achievements I have had so far. I have taken stats previously and I knew going into this class what I am supposed to do to complete these statistical analyses. Know I know how to have a computer do them much quicker. There are times when I get caught up on something like a value being null due to me improperly cleaning the data but as of now it hasn't been anything I cant figure out.
+
+## **3. Looking Ahead:**: Are you making the progress you hoped for? If not, what barriers are you facing, and what steps could help you overcome them? If yes, what strategies have been working for you? What are your goals for the remainder of the course and how can the teaching team best support you in reaching them?
+
+I have found myself really struggling to create graphs. I often have to use the ? help feature or look it up on Google. I think its a handy tool to be able to visualize large sets of data using R but it doesn't feel smooth or easy at the moment. I have been trying to figure it out as they have been assigned and have learned many tips throughout my own research and learning that have helped. My goals for this class is to get a foundation in R so I can use it to quickly do statistics and present different findings. I think it is a valuable tool and it makes it so I don't have to do it by hand or by 'plugging and chugging'.
+
+## **4. Modes of Learning**: How do you feel about the methods in which content is shared? Have lectures been useful? Labs? Office hours? Daily Exercises? What would you like to see continue, and what would you like us to consider changing to help your growth?
+
+Lectures have been helpful and especially the echo 360s videos too. Its nice to be able to go back and get a quick refresher. Labs have been useful especially for the setup of each lab when GitHub was a struggle. Alan has helped me with multiple issues which has been super nice. I wish office hours were less crowded. I feel as though every time I went there were many other students asking questions.

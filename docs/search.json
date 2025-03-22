@@ -1,0 +1,135 @@
+[
+  {
+    "objectID": "exercises/exercise_8.html",
+    "href": "exercises/exercise_8.html",
+    "title": "Daily Exercise 8",
+    "section": "",
+    "text": "library(readr)\ncovid_data &lt;- read.csv(\"https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties-recent.csv\")\nhead(covid_data)\n\n        date  county   state fips cases deaths\n1 2023-02-22 Autauga Alabama 1001 19732    230\n2 2023-02-22 Baldwin Alabama 1003 69641    724\n3 2023-02-22 Barbour Alabama 1005  7451    112\n4 2023-02-22    Bibb Alabama 1007  8067    109\n5 2023-02-22  Blount Alabama 1009 18616    261\n6 2023-02-22 Bullock Alabama 1011  3020     54"
+  },
+  {
+    "objectID": "exercises/exercise_8.html#step-1-read-in-covid-data",
+    "href": "exercises/exercise_8.html#step-1-read-in-covid-data",
+    "title": "Daily Exercise 8",
+    "section": "",
+    "text": "library(readr)\ncovid_data &lt;- read.csv(\"https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties-recent.csv\")\nhead(covid_data)\n\n        date  county   state fips cases deaths\n1 2023-02-22 Autauga Alabama 1001 19732    230\n2 2023-02-22 Baldwin Alabama 1003 69641    724\n3 2023-02-22 Barbour Alabama 1005  7451    112\n4 2023-02-22    Bibb Alabama 1007  8067    109\n5 2023-02-22  Blount Alabama 1009 18616    261\n6 2023-02-22 Bullock Alabama 1011  3020     54"
+  },
+  {
+    "objectID": "exercises/exercise_8.html#step-2-create-a-new-data-frame-with-state-info",
+    "href": "exercises/exercise_8.html#step-2-create-a-new-data-frame-with-state-info",
+    "title": "Daily Exercise 8",
+    "section": "Step 2: Create a New Data Frame with State Info",
+    "text": "Step 2: Create a New Data Frame with State Info\n\nstate_data &lt;- data.frame(\n  state = state.name,\n  state_abb = state.abb,\n  region = state.region,\n  stringsAsFactors = FALSE\n)\nhead(state_data)\n\n       state state_abb region\n1    Alabama        AL  South\n2     Alaska        AK   West\n3    Arizona        AZ   West\n4   Arkansas        AR  South\n5 California        CA   West\n6   Colorado        CO   West"
+  },
+  {
+    "objectID": "exercises/exercise_8.html#step-3-join-data-frames",
+    "href": "exercises/exercise_8.html#step-3-join-data-frames",
+    "title": "Daily Exercise 8",
+    "section": "Step 3: Join Data Frames",
+    "text": "Step 3: Join Data Frames\n\nlibrary(dplyr)\n\n\nAttaching package: 'dplyr'\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union\n\ncovid_data &lt;- covid_data %&gt;%\n  left_join(state_data, by = c(\"state\" = \"state\"))\nhead(covid_data)\n\n        date  county   state fips cases deaths state_abb region\n1 2023-02-22 Autauga Alabama 1001 19732    230        AL  South\n2 2023-02-22 Baldwin Alabama 1003 69641    724        AL  South\n3 2023-02-22 Barbour Alabama 1005  7451    112        AL  South\n4 2023-02-22    Bibb Alabama 1007  8067    109        AL  South\n5 2023-02-22  Blount Alabama 1009 18616    261        AL  South\n6 2023-02-22 Bullock Alabama 1011  3020     54        AL  South"
+  },
+  {
+    "objectID": "exercises/exercise_8.html#step-4-daily-cumulative-cases-and-deaths-for-each-region",
+    "href": "exercises/exercise_8.html#step-4-daily-cumulative-cases-and-deaths-for-each-region",
+    "title": "Daily Exercise 8",
+    "section": "Step 4: Daily Cumulative Cases and Deaths for Each Region",
+    "text": "Step 4: Daily Cumulative Cases and Deaths for Each Region\n\ncovid_data &lt;- covid_data %&gt;%\n  group_by(region, state, date) %&gt;%\n  arrange(date) %&gt;%\n  mutate(\n    daily_cases = cases - lag(cases, default = 0),\n    daily_deaths = deaths - lag(deaths, default = 0),\n    cumulative_cases = cumsum(daily_cases),\n    cumulative_deaths = cumsum(daily_deaths)\n  ) %&gt;%\n  ungroup()\nhead(covid_data)\n\n# A tibble: 6 × 12\n  date       county  state    fips cases deaths state_abb region daily_cases\n  &lt;chr&gt;      &lt;chr&gt;   &lt;chr&gt;   &lt;int&gt; &lt;int&gt;  &lt;int&gt; &lt;chr&gt;     &lt;fct&gt;        &lt;int&gt;\n1 2023-02-22 Autauga Alabama  1001 19732    230 AL        South        19732\n2 2023-02-22 Baldwin Alabama  1003 69641    724 AL        South        49909\n3 2023-02-22 Barbour Alabama  1005  7451    112 AL        South       -62190\n4 2023-02-22 Bibb    Alabama  1007  8067    109 AL        South          616\n5 2023-02-22 Blount  Alabama  1009 18616    261 AL        South        10549\n6 2023-02-22 Bullock Alabama  1011  3020     54 AL        South       -15596\n# ℹ 3 more variables: daily_deaths &lt;int&gt;, cumulative_cases &lt;int&gt;,\n#   cumulative_deaths &lt;int&gt;"
+  },
+  {
+    "objectID": "exercises/exercise_8.html#step-5-pivot-data",
+    "href": "exercises/exercise_8.html#step-5-pivot-data",
+    "title": "Daily Exercise 8",
+    "section": "Step 5: Pivot Data",
+    "text": "Step 5: Pivot Data\n\n#covid_data_long &lt;- covid_data %&gt;%\n#  pivot_longer(\n#    cols = c(\"cumulative_cases\", \"cumulative_deaths\"),\n#    names_to = \"metric\",\n#    values_to = \"value\"\n#  )\n#head(covid_data_long)"
+  },
+  {
+    "objectID": "exercises/exercise_8.html#step-6-plot-data",
+    "href": "exercises/exercise_8.html#step-6-plot-data",
+    "title": "Daily Exercise 8",
+    "section": "Step 6: Plot Data",
+    "text": "Step 6: Plot Data"
+  },
+  {
+    "objectID": "exercises/exercise_6.html",
+    "href": "exercises/exercise_6.html",
+    "title": "Daily Exercise 6",
+    "section": "",
+    "text": "We are going to practice some data wrangling skills using a real-world dataset about COVID cases curated and maintained by the New York Times. The data has been used to create reports and data visualizations like this, and are archived on a GitHub repo here. Looking at the README in this repository we read:\n\n“We are providing two sets of data with cumulative counts of coronavirus cases and deaths: one with our most current numbers for each geography and another with historical data showing the tally for each day for each geography … the historical files are the final counts at the end of each day … The historical and live data are released in three files, one for each of these geographic levels: U.S., states and counties. A smaller file with only the most recent 30 days of data is also available”\n\nFor this lab we will use the historic, recent, country level data which is stored as an updating CSV at this URL:\n\nhttps://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties-recent.csv\n\nI will get you started this week, in the following code chunk, I am attaching the tidyverse package; saving the NY-Times URL as a value called “url”; and I am reading that URL into an object called covid\n\nlibrary(tidyverse)\nurl = 'https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties-recent.csv'\ncovid = read_csv(url)\nhead(covid, 5)\n\n# A tibble: 5 × 6\n  date       county  state   fips  cases deaths\n  &lt;date&gt;     &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt; &lt;dbl&gt;  &lt;dbl&gt;\n1 2023-02-22 Autauga Alabama 01001 19732    230\n2 2023-02-22 Baldwin Alabama 01003 69641    724\n3 2023-02-22 Barbour Alabama 01005  7451    112\n4 2023-02-22 Bibb    Alabama 01007  8067    109\n5 2023-02-22 Blount  Alabama 01009 18616    261\n\n\nHint: You can print the top X rows of a data.frame with slice.\n\nslice(covid, 1:5)\n\nto print the top 5 columns of the raw covid object\n\n\nUse dplyr verbs to create a data.frame of the 5 counties with the most current cases. Remember, the cases and deaths are cumulative, so you only need to deal with the data for the most current (max) date.\n(Hint: filter, arrange, slice)\n\nlibrary(tidyverse)\n\n\n\n\n\nUse dplyr verbs to create a data.frame of the 5 states with the most cases current cases.\n(Hint: filter, group_by, summarize, arrange, slice)\n\ntop_states &lt;- covid %&gt;%\n  filter(date == max(date)) %&gt;%\n  group_by(state) %&gt;%\n  summarize(total_cases = sum(cases, na.rm = TRUE)) %&gt;%\n  arrange(desc(total_cases)) %&gt;%\n  slice(1:5)\n\nprint(top_states)\n\n# A tibble: 5 × 2\n  state      total_cases\n  &lt;chr&gt;            &lt;dbl&gt;\n1 California    12169158\n2 Texas          8447233\n3 Florida        7542869\n4 New York       6805271\n5 Illinois       4107931\n\n\n\n\n\nUse the dplyr verbs to report the 5 counties with the worst current death/cases ratio: (e.g.\\(100* (deaths/cases)\\))\n(Hint: You will need to remove those where cases == 0 and county == Unknown) (Hint: filter, mutate, arrange, slice)\n\nworst_ratios &lt;- covid %&gt;%\n  filter(date == max(date), cases &gt; 0, county != \"Unknown\") %&gt;%\n  mutate(death_ratio = 100 * (deaths / cases)) %&gt;%\n  arrange(desc(death_ratio)) %&gt;%\n  slice(1:5)\n\nprint(worst_ratios)\n\n# A tibble: 5 × 7\n  date       county   state    fips  cases deaths death_ratio\n  &lt;date&gt;     &lt;chr&gt;    &lt;chr&gt;    &lt;chr&gt; &lt;dbl&gt;  &lt;dbl&gt;       &lt;dbl&gt;\n1 2023-03-23 Storey   Nevada   32029   197     14        7.11\n2 2023-03-23 Sabine   Texas    48403  1672     94        5.62\n3 2023-03-23 McMullen Texas    48311   196     11        5.61\n4 2023-03-23 Blaine   Nebraska 31009    76      4        5.26\n5 2023-03-23 Grant    Nebraska 31075   114      6        5.26\n\n\n\n\n\nUse the dplyr verbs to report the 5 states with the worst current death/case ratio.\n(Hint: filter, group_by, summarize, mutate, arrange, slice)\n\nworst_state_ratios &lt;- covid %&gt;%\n  filter(date == max(date), cases &gt; 0) %&gt;%\n  group_by(state) %&gt;%\n  summarize(total_cases = sum(cases, na.rm = TRUE),\n            total_deaths = sum(deaths, na.rm = TRUE)) %&gt;%\n  mutate(death_case_ratio = 100 * (total_deaths / total_cases)) %&gt;%\n  arrange(desc(death_case_ratio)) %&gt;%\n  slice(1:5)\n\nprint(worst_state_ratios)\n\n# A tibble: 5 × 4\n  state        total_cases total_deaths death_case_ratio\n  &lt;chr&gt;              &lt;dbl&gt;        &lt;dbl&gt;            &lt;dbl&gt;\n1 Pennsylvania     3539135        50701             1.43\n2 Michigan         3068195        42311             1.38\n3 Georgia          2984923        41056             1.38\n4 Nevada            892814        12093             1.35\n5 Arizona          2451062        33190             1.35"
+  },
+  {
+    "objectID": "exercises/exercise_6.html#daily-exercise-6",
+    "href": "exercises/exercise_6.html#daily-exercise-6",
+    "title": "Daily Exercise 6",
+    "section": "",
+    "text": "We are going to practice some data wrangling skills using a real-world dataset about COVID cases curated and maintained by the New York Times. The data has been used to create reports and data visualizations like this, and are archived on a GitHub repo here. Looking at the README in this repository we read:\n\n“We are providing two sets of data with cumulative counts of coronavirus cases and deaths: one with our most current numbers for each geography and another with historical data showing the tally for each day for each geography … the historical files are the final counts at the end of each day … The historical and live data are released in three files, one for each of these geographic levels: U.S., states and counties. A smaller file with only the most recent 30 days of data is also available”\n\nFor this lab we will use the historic, recent, country level data which is stored as an updating CSV at this URL:\n\nhttps://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties-recent.csv\n\nI will get you started this week, in the following code chunk, I am attaching the tidyverse package; saving the NY-Times URL as a value called “url”; and I am reading that URL into an object called covid\n\nlibrary(tidyverse)\nurl = 'https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties-recent.csv'\ncovid = read_csv(url)\nhead(covid, 5)\n\n# A tibble: 5 × 6\n  date       county  state   fips  cases deaths\n  &lt;date&gt;     &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt; &lt;dbl&gt;  &lt;dbl&gt;\n1 2023-02-22 Autauga Alabama 01001 19732    230\n2 2023-02-22 Baldwin Alabama 01003 69641    724\n3 2023-02-22 Barbour Alabama 01005  7451    112\n4 2023-02-22 Bibb    Alabama 01007  8067    109\n5 2023-02-22 Blount  Alabama 01009 18616    261\n\n\nHint: You can print the top X rows of a data.frame with slice.\n\nslice(covid, 1:5)\n\nto print the top 5 columns of the raw covid object\n\n\nUse dplyr verbs to create a data.frame of the 5 counties with the most current cases. Remember, the cases and deaths are cumulative, so you only need to deal with the data for the most current (max) date.\n(Hint: filter, arrange, slice)\n\nlibrary(tidyverse)\n\n\n\n\n\nUse dplyr verbs to create a data.frame of the 5 states with the most cases current cases.\n(Hint: filter, group_by, summarize, arrange, slice)\n\ntop_states &lt;- covid %&gt;%\n  filter(date == max(date)) %&gt;%\n  group_by(state) %&gt;%\n  summarize(total_cases = sum(cases, na.rm = TRUE)) %&gt;%\n  arrange(desc(total_cases)) %&gt;%\n  slice(1:5)\n\nprint(top_states)\n\n# A tibble: 5 × 2\n  state      total_cases\n  &lt;chr&gt;            &lt;dbl&gt;\n1 California    12169158\n2 Texas          8447233\n3 Florida        7542869\n4 New York       6805271\n5 Illinois       4107931\n\n\n\n\n\nUse the dplyr verbs to report the 5 counties with the worst current death/cases ratio: (e.g.\\(100* (deaths/cases)\\))\n(Hint: You will need to remove those where cases == 0 and county == Unknown) (Hint: filter, mutate, arrange, slice)\n\nworst_ratios &lt;- covid %&gt;%\n  filter(date == max(date), cases &gt; 0, county != \"Unknown\") %&gt;%\n  mutate(death_ratio = 100 * (deaths / cases)) %&gt;%\n  arrange(desc(death_ratio)) %&gt;%\n  slice(1:5)\n\nprint(worst_ratios)\n\n# A tibble: 5 × 7\n  date       county   state    fips  cases deaths death_ratio\n  &lt;date&gt;     &lt;chr&gt;    &lt;chr&gt;    &lt;chr&gt; &lt;dbl&gt;  &lt;dbl&gt;       &lt;dbl&gt;\n1 2023-03-23 Storey   Nevada   32029   197     14        7.11\n2 2023-03-23 Sabine   Texas    48403  1672     94        5.62\n3 2023-03-23 McMullen Texas    48311   196     11        5.61\n4 2023-03-23 Blaine   Nebraska 31009    76      4        5.26\n5 2023-03-23 Grant    Nebraska 31075   114      6        5.26\n\n\n\n\n\nUse the dplyr verbs to report the 5 states with the worst current death/case ratio.\n(Hint: filter, group_by, summarize, mutate, arrange, slice)\n\nworst_state_ratios &lt;- covid %&gt;%\n  filter(date == max(date), cases &gt; 0) %&gt;%\n  group_by(state) %&gt;%\n  summarize(total_cases = sum(cases, na.rm = TRUE),\n            total_deaths = sum(deaths, na.rm = TRUE)) %&gt;%\n  mutate(death_case_ratio = 100 * (total_deaths / total_cases)) %&gt;%\n  arrange(desc(death_case_ratio)) %&gt;%\n  slice(1:5)\n\nprint(worst_state_ratios)\n\n# A tibble: 5 × 4\n  state        total_cases total_deaths death_case_ratio\n  &lt;chr&gt;              &lt;dbl&gt;        &lt;dbl&gt;            &lt;dbl&gt;\n1 Pennsylvania     3539135        50701             1.43\n2 Michigan         3068195        42311             1.38\n3 Georgia          2984923        41056             1.38\n4 Nevada            892814        12093             1.35\n5 Arizona          2451062        33190             1.35"
+  },
+  {
+    "objectID": "exercises/exercise_5.html",
+    "href": "exercises/exercise_5.html",
+    "title": "Daily Exercise 5",
+    "section": "",
+    "text": "# Load the palmerspenguins package\nlibrary(palmerpenguins)\n\n\n# 1. Examine the dataset using the help page\n?penguins\n\nstarting httpd help server ... done\n\n\n\n# 2. Check the class of the penguins dataset\nclass(penguins)\n\n[1] \"tbl_df\"     \"tbl\"        \"data.frame\"\n\n\n\n# 3. Check the structure of the dataset\nstr(penguins)\n\ntibble [344 × 8] (S3: tbl_df/tbl/data.frame)\n $ species          : Factor w/ 3 levels \"Adelie\",\"Chinstrap\",..: 1 1 1 1 1 1 1 1 1 1 ...\n $ island           : Factor w/ 3 levels \"Biscoe\",\"Dream\",..: 3 3 3 3 3 3 3 3 3 3 ...\n $ bill_length_mm   : num [1:344] 39.1 39.5 40.3 NA 36.7 39.3 38.9 39.2 34.1 42 ...\n $ bill_depth_mm    : num [1:344] 18.7 17.4 18 NA 19.3 20.6 17.8 19.6 18.1 20.2 ...\n $ flipper_length_mm: int [1:344] 181 186 195 NA 193 190 181 195 193 190 ...\n $ body_mass_g      : int [1:344] 3750 3800 3250 NA 3450 3650 3625 4675 3475 4250 ...\n $ sex              : Factor w/ 2 levels \"female\",\"male\": 2 1 1 NA 1 2 1 2 NA NA ...\n $ year             : int [1:344] 2007 2007 2007 2007 2007 2007 2007 2007 2007 2007 ...\n\n\n\n# 4. Check the dimensions of the dataset\ndim(penguins)\n\n[1] 344   8\n\n\n\n# 5. Get the column names of the dataset\ncolnames(penguins)\n\n[1] \"species\"           \"island\"            \"bill_length_mm\"   \n[4] \"bill_depth_mm\"     \"flipper_length_mm\" \"body_mass_g\"      \n[7] \"sex\"               \"year\"             \n\n\n\n# 6. Check the data type of `flipper_length_mm` and `island`\nclass(penguins$flipper_length_mm)\n\n[1] \"integer\"\n\nclass(penguins$island)\n\n[1] \"factor\"\n\n\n\n# 7. Calculate the mean flipper length (excluding NAs)\nmean(penguins$flipper_length_mm, na.rm = TRUE)\n\n[1] 200.9152\n\n\n\n# 8. Calculate the standard deviation of flipper length (excluding NAs)\nsd(penguins$flipper_length_mm, na.rm = TRUE)\n\n[1] 14.06171\n\n\n\n# 9. Calculate the median body mass (excluding NAs)\nmedian(penguins$body_mass_g, na.rm = TRUE)\n\n[1] 4050\n\n\n\n# 10. Find the island of the 100th penguin\npenguins$island[100]\n\n[1] Dream\nLevels: Biscoe Dream Torgersen"
+  },
+  {
+    "objectID": "exercises/exercise_5.html#daily-exercise-5",
+    "href": "exercises/exercise_5.html#daily-exercise-5",
+    "title": "Daily Exercise 5",
+    "section": "",
+    "text": "# Load the palmerspenguins package\nlibrary(palmerpenguins)\n\n\n# 1. Examine the dataset using the help page\n?penguins\n\nstarting httpd help server ... done\n\n\n\n# 2. Check the class of the penguins dataset\nclass(penguins)\n\n[1] \"tbl_df\"     \"tbl\"        \"data.frame\"\n\n\n\n# 3. Check the structure of the dataset\nstr(penguins)\n\ntibble [344 × 8] (S3: tbl_df/tbl/data.frame)\n $ species          : Factor w/ 3 levels \"Adelie\",\"Chinstrap\",..: 1 1 1 1 1 1 1 1 1 1 ...\n $ island           : Factor w/ 3 levels \"Biscoe\",\"Dream\",..: 3 3 3 3 3 3 3 3 3 3 ...\n $ bill_length_mm   : num [1:344] 39.1 39.5 40.3 NA 36.7 39.3 38.9 39.2 34.1 42 ...\n $ bill_depth_mm    : num [1:344] 18.7 17.4 18 NA 19.3 20.6 17.8 19.6 18.1 20.2 ...\n $ flipper_length_mm: int [1:344] 181 186 195 NA 193 190 181 195 193 190 ...\n $ body_mass_g      : int [1:344] 3750 3800 3250 NA 3450 3650 3625 4675 3475 4250 ...\n $ sex              : Factor w/ 2 levels \"female\",\"male\": 2 1 1 NA 1 2 1 2 NA NA ...\n $ year             : int [1:344] 2007 2007 2007 2007 2007 2007 2007 2007 2007 2007 ...\n\n\n\n# 4. Check the dimensions of the dataset\ndim(penguins)\n\n[1] 344   8\n\n\n\n# 5. Get the column names of the dataset\ncolnames(penguins)\n\n[1] \"species\"           \"island\"            \"bill_length_mm\"   \n[4] \"bill_depth_mm\"     \"flipper_length_mm\" \"body_mass_g\"      \n[7] \"sex\"               \"year\"             \n\n\n\n# 6. Check the data type of `flipper_length_mm` and `island`\nclass(penguins$flipper_length_mm)\n\n[1] \"integer\"\n\nclass(penguins$island)\n\n[1] \"factor\"\n\n\n\n# 7. Calculate the mean flipper length (excluding NAs)\nmean(penguins$flipper_length_mm, na.rm = TRUE)\n\n[1] 200.9152\n\n\n\n# 8. Calculate the standard deviation of flipper length (excluding NAs)\nsd(penguins$flipper_length_mm, na.rm = TRUE)\n\n[1] 14.06171\n\n\n\n# 9. Calculate the median body mass (excluding NAs)\nmedian(penguins$body_mass_g, na.rm = TRUE)\n\n[1] 4050\n\n\n\n# 10. Find the island of the 100th penguin\npenguins$island[100]\n\n[1] Dream\nLevels: Biscoe Dream Torgersen"
+  },
+  {
+    "objectID": "exercises/exercise_9.html",
+    "href": "exercises/exercise_9.html",
+    "title": "Daily Exercise 9",
+    "section": "",
+    "text": "?airquality\n\nstarting httpd help server ... done"
+  },
+  {
+    "objectID": "exercises/exercise_9.html#step-1",
+    "href": "exercises/exercise_9.html#step-1",
+    "title": "Daily Exercise 9",
+    "section": "",
+    "text": "?airquality\n\nstarting httpd help server ... done"
+  },
+  {
+    "objectID": "exercises/exercise_9.html#step-2",
+    "href": "exercises/exercise_9.html#step-2",
+    "title": "Daily Exercise 9",
+    "section": "Step 2",
+    "text": "Step 2\n\nlibrary(visdat)\n\nWarning: package 'visdat' was built under R version 4.3.3\n\nvis_dat(airquality)\n\n\n\n\n\n\n\n\nThe data will need some cleaning because there are missing values for both Ozone and Solar Radiation."
+  },
+  {
+    "objectID": "exercises/exercise_9.html#step-3",
+    "href": "exercises/exercise_9.html#step-3",
+    "title": "Daily Exercise 9",
+    "section": "Step 3",
+    "text": "Step 3\n\ncleaned_data &lt;- na.omit(airquality[, c(\"Ozone\", \"Wind\")])\n\nmodel &lt;- lm(Ozone ~ Wind, data = cleaned_data)\n\nsummary(model)\n\n\nCall:\nlm(formula = Ozone ~ Wind, data = cleaned_data)\n\nResiduals:\n    Min      1Q  Median      3Q     Max \n-51.572 -18.854  -4.868  15.234  90.000 \n\nCoefficients:\n            Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept)  96.8729     7.2387   13.38  &lt; 2e-16 ***\nWind         -5.5509     0.6904   -8.04 9.27e-13 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 26.47 on 114 degrees of freedom\nMultiple R-squared:  0.3619,    Adjusted R-squared:  0.3563 \nF-statistic: 64.64 on 1 and 114 DF,  p-value: 9.272e-13\n\n\nI choose wind because there is no data missing according to the vis_dat graph and wind speed might be associated with the concentration of ozone in the atmosphere."
+  },
+  {
+    "objectID": "exercises/exercise_9.html#step-4",
+    "href": "exercises/exercise_9.html#step-4",
+    "title": "Daily Exercise 9",
+    "section": "Step 4",
+    "text": "Step 4\n\nsummary(model)\n\n\nCall:\nlm(formula = Ozone ~ Wind, data = cleaned_data)\n\nResiduals:\n    Min      1Q  Median      3Q     Max \n-51.572 -18.854  -4.868  15.234  90.000 \n\nCoefficients:\n            Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept)  96.8729     7.2387   13.38  &lt; 2e-16 ***\nWind         -5.5509     0.6904   -8.04 9.27e-13 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 26.47 on 114 degrees of freedom\nMultiple R-squared:  0.3619,    Adjusted R-squared:  0.3563 \nF-statistic: 64.64 on 1 and 114 DF,  p-value: 9.272e-13\n\n\nI would consider this a valid model because the p-value is less than 0.05 and the R-squared value seems good."
+  },
+  {
+    "objectID": "exercises/exercise_9.html#step-5",
+    "href": "exercises/exercise_9.html#step-5",
+    "title": "Daily Exercise 9",
+    "section": "Step 5",
+    "text": "Step 5\nR-squared number represents how well wind explains changes in ozone levels. Say the R-squared value is .6 that means that 60 percent of the variability in ozone can be explained by the variability in wind."
+  },
+  {
+    "objectID": "exercises/exercise_9.html#step-6",
+    "href": "exercises/exercise_9.html#step-6",
+    "title": "Daily Exercise 9",
+    "section": "Step 6",
+    "text": "Step 6\n\nlibrary(broom)\n\naugmented_data &lt;- augment(model, cleaned_data)\n\nhead(augmented_data)\n\n# A tibble: 6 × 9\n  .rownames Ozone  Wind .fitted .resid    .hat .sigma .cooksd .std.resid\n  &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;      &lt;dbl&gt;\n1 1            41   7.4    55.8  -14.8 0.0127    26.5 0.00204     -0.563\n2 2            36   8      52.5  -16.5 0.0110    26.5 0.00217     -0.626\n3 3            12  12.6    26.9  -14.9 0.0137    26.5 0.00224     -0.568\n4 4            18  11.5    33.0  -15.0 0.0104    26.5 0.00172     -0.571\n5 6            28  14.9    14.2   13.8 0.0259    26.6 0.00373      0.530\n6 7            23   8.6    49.1  -26.1 0.00970   26.5 0.00482     -0.992"
+  },
+  {
+    "objectID": "exercises/exercise_9.html#step-7",
+    "href": "exercises/exercise_9.html#step-7",
+    "title": "Daily Exercise 9",
+    "section": "Step 7",
+    "text": "Step 7\n\nlibrary(ggplot2)\n\n\nggplot(augmented_data, aes(x = Ozone, y = .fitted)) +\n  geom_point() + \n  geom_abline(intercept = 0, slope = 1, color = \"red\") +  \n  labs(\n    title = \"Actual vs Predicted Ozone\",\n    subtitle = paste(\"Correlation:\", round(cor(augmented_data$Ozone, augmented_data$.fitted), 2)),\n    x = \"Actual Ozone\",\n    y = \"Predicted Ozone\"\n  ) +\n  theme_minimal()"
+  }
+]

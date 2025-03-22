@@ -1,0 +1,74 @@
+---
+title: "Daily Exercise 9 & 10"
+author: Nick Beegle
+format: html
+self-contained: TRUE
+editor: visual
+---
+
+## Step 1
+
+```{r}
+?airquality
+```
+
+## Step 2
+
+```{r}
+library(visdat)
+vis_dat(airquality)
+```
+
+The data will need some cleaning because there are missing values for both Ozone and Solar Radiation.
+
+## Step 3
+
+```{r}
+cleaned_data <- na.omit(airquality[, c("Ozone", "Wind")])
+
+model <- lm(Ozone ~ Wind, data = cleaned_data)
+
+summary(model)
+```
+
+I choose wind because there is no data missing according to the vis_dat graph and wind speed might be associated with the concentration of ozone in the atmosphere.
+
+## Step 4
+
+```{r}
+summary(model)
+```
+
+I would consider this a valid model because the p-value is less than 0.05 and the R-squared value seems good.
+
+## Step 5
+
+R-squared number represents how well wind explains changes in ozone levels. Say the R-squared value is .6 that means that 60 percent of the variability in ozone can be explained by the variability in wind.
+
+## Step 6
+
+```{r}
+library(broom)
+
+augmented_data <- augment(model, cleaned_data)
+
+head(augmented_data)
+```
+
+## Step 7
+
+```{r}
+library(ggplot2)
+
+
+ggplot(augmented_data, aes(x = Ozone, y = .fitted)) +
+  geom_point() + 
+  geom_abline(intercept = 0, slope = 1, color = "red") +  
+  labs(
+    title = "Actual vs Predicted Ozone",
+    subtitle = paste("Correlation:", round(cor(augmented_data$Ozone, augmented_data$.fitted), 2)),
+    x = "Actual Ozone",
+    y = "Predicted Ozone"
+  ) +
+  theme_minimal()
+```

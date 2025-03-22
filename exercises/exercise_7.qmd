@@ -1,0 +1,7 @@
+---
+title: "Daily Exercise 7"
+author: Nick Beegle
+format: html
+self-contained: TRUE
+editor: visual
+---

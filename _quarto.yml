@@ -1,0 +1,31 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "My R Exercises"
+  navbar:
+    left:
+      - href: index.qmd
+        text: "Home"
+      - text: "Exercises"
+        menu:
+          - href: exercises/exercise_5.qmd
+            text: "Exercise 5"
+          - href: exercises/exercise_6.qmd
+            text: "Exercise 6"
+          - href: exercises/exercise_7.qmd
+            text: "Exercise 7"
+          - href: exercises/exercise_8.qmd
+            text: "Exercise 8"
+          - href: exercises/exercise_9.qmd
+            text: "Exercise 9"
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    self-contained: true
+
+editor: visual

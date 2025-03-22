@@ -1,0 +1,65 @@
+---
+title: "Daily Exercise 5"
+author: Nick Beegle
+format: html
+self-contained: TRUE
+editor: visual
+---
+
+## Daily Exercise 5
+
+```{r}
+# Load the palmerspenguins package
+library(palmerpenguins)
+```
+
+```{r}
+# 1. Examine the dataset using the help page
+?penguins
+```
+
+```{r}
+# 2. Check the class of the penguins dataset
+class(penguins)
+```
+
+```{r}
+# 3. Check the structure of the dataset
+str(penguins)
+```
+
+```{r}
+# 4. Check the dimensions of the dataset
+dim(penguins)
+```
+
+```{r}
+# 5. Get the column names of the dataset
+colnames(penguins)
+```
+
+```{r}
+# 6. Check the data type of `flipper_length_mm` and `island`
+class(penguins$flipper_length_mm)
+class(penguins$island)
+```
+
+```{r}
+# 7. Calculate the mean flipper length (excluding NAs)
+mean(penguins$flipper_length_mm, na.rm = TRUE)
+```
+
+```{r}
+# 8. Calculate the standard deviation of flipper length (excluding NAs)
+sd(penguins$flipper_length_mm, na.rm = TRUE)
+```
+
+```{r}
+# 9. Calculate the median body mass (excluding NAs)
+median(penguins$body_mass_g, na.rm = TRUE)
+```
+
+```{r}
+# 10. Find the island of the 100th penguin
+penguins$island[100]
+```

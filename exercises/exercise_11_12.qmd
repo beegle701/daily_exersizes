@@ -1,0 +1,89 @@
+---
+title: "Daily Exercise 11 & 12"
+author: Nick Beegle
+format: html
+self-contained: TRUE
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(broom)
+library(ggpubr)
+library(recipes)
+```
+
+# Part 1: Normality Testing
+
+```{r}
+data("airquality")
+str(airquality)
+summary(airquality)
+```
+
+The dataset contains air quality measurements in New York. It has columns like Ozone, Temp, Solar.R, and Wind.
+
+```{r}
+shapiro.test(airquality$Ozone)
+shapiro.test(airquality$Temp)
+shapiro.test(airquality$Solar.R)
+shapiro.test(airquality$Wind)
+```
+
+The Shapiro-Wilk test checks if data is normally distributed. The null hypothesis is that the data follows a normal distribution. The alternative hypothesis is that it does not. If the p-value is small (\<0.05), we reject the null hypothesis. Most of the variables have small p-values, meaning that wind with a p-value of 0.1178 is not normally distributed
+
+# Part 2: Data Transformation and Feature Engineering
+
+```{r}
+airquality <- airquality %>%
+  mutate(Season = case_when(
+    Month %in% c(11, 12, 1) ~ "Winter",
+    Month %in% c(2, 3, 4) ~ "Spring",
+    Month %in% c(5, 6, 7) ~ "Summer",
+    Month %in% c(8, 9, 10) ~ "Fall"
+  ))
+
+table(airquality$Season)
+```
+
+# Part 3: Data Preprocessing
+
+```{r}
+airquality_clean <- airquality %>% drop_na(Ozone) 
+
+rec <- recipe(Ozone ~ Temp + Solar.R + Wind + Season, data = airquality_clean) %>%
+  step_impute_mean(all_numeric_predictors()) %>%  
+  step_normalize(all_numeric_predictors())
+
+dat_prepped <- prep(rec) %>% bake(new_data = NULL)
+```
+
+Normalizing makes sure variables are on the same scale. We use prep() to set up the transformations and bake() to apply them.
+
+# Part 4: Building a Linear Regression Model
+
+```{r}
+model <- lm(Ozone ~ ., data = dat_prepped)
+summary(model)
+```
+
+The R-squared value shows how well the model fits. The coefficients show how each variable affects Ozone. Some p-values are small, meaning those variables are significant.
+
+# Part 5: Model Diagnostics
+
+```{r}
+results <- augment(model, dat_prepped)
+
+nrow(dat_prepped) 
+
+ggarrange(
+  ggplot(results, aes(x = .resid)) + geom_histogram(),
+  ggqqplot(results$.resid),
+  ncol = 2
+)
+
+ggscatter(results, x = "Ozone", y = ".fitted",
+          add = "reg.line", conf.int = TRUE,
+          cor.coef = TRUE, cor.method = "spearman",
+          ellipse = TRUE)
+```
