@@ -1,0 +1,97 @@
+---
+title: "Exercise 21"
+author: Nick Beegle
+format: html
+self-contained: TRUE
+editor: visual
+---
+
+```{r}
+#install.packages("dataRetrieval")
+#install.packages("tsibble")
+#install.packages("plotly")
+#install.packages("feasts")
+```
+
+```{r}
+library(dataRetrieval)
+library(dplyr)
+library(lubridate)
+library(tsibble)
+library(ggplot2)
+library(plotly)
+library(feasts)
+library(fabletools)
+```
+
+```{r}
+# Download daily streamflow data from USGS
+poudre_flow <- readNWISdv(siteNumber = "06752260",
+                          parameterCd = "00060",
+                          startDate = "2013-01-01",
+                          endDate = "2023-12-31") |>
+  renameNWISColumns() |>
+  mutate(Date = yearmonth(Date)) |>
+  group_by(Date) |>
+  summarise(Flow = mean(Flow, na.rm = TRUE))
+```
+
+```{r}
+#convert to tsibble
+poudre_ts <- as_tibble(poudre_flow, index = date)
+```
+
+```{r}
+#plot
+flow_plot <- ggplot(poudre_ts, aes(x = Date, y = Flow)) +
+  geom_line(color = "blue") +
+  labs(title = "Cache la Poudre Monthly Streamflow",
+       x = "Date",
+       y = "Flow (cfs)") +
+  theme_minimal()
+
+ggplotly(flow_plot)
+```
+
+```{r}
+#animated plot with plotly
+poudre_ts_anim <- poudre_ts |> 
+  mutate(frame = as.character(Date))
+
+plot_ly(poudre_ts_anim, 
+        x = ~Date, 
+        y = ~Flow, 
+        type = 'scatter', 
+        mode = 'lines',
+        frame = ~frame,
+        line = list(color = 'blue')) |>
+  layout(title = "Animated Streamflow Time Series",
+         xaxis = list(title = "Date"),
+         yaxis = list(title = "Flow (cfs)")) |>
+  animation_opts(frame = 100, redraw = TRUE)
+```
+
+```{r}
+#subseries
+
+poudre_ts <- poudre_flow |>
+  mutate(Date = yearmonth(Date)) |>
+  group_by(Date) |>
+  summarise(Flow = mean(Flow, na.rm = TRUE)) |>
+  as_tsibble(index = Date)
+
+gg_subseries(poudre_ts, Flow)
+```
+
+## Interpretation: Seasons are defined as months in this plot. Each sub series depicts the variation in flow for each month  over different years. There are peaks when snow melts and lows in dryer or colder times of the year.
+
+```{r}
+#STL decomposition
+decomposition <- poudre_ts |> 
+  model(STL(Flow ~ season(window = "periodic"))) |> 
+  components()
+
+autoplot(decomposition)
+```
+
+### There is long term changes in flow possibly due to climate change or land use changes. This can be seen in the trend section of the graph. Also seasonal changes can be seen in the peaks in flow throughout the year with peaks and valleys. The remainder captures anything irregular with the data.
